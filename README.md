@@ -19,10 +19,10 @@ Install dependencies:
 
 pip install -r requirements.txt
 
-Set up your OpenAI API key:
+Set up your Groq API key:
 Create a .env file in the project's root directory and add your key:
 
-OPENAI_API_KEY="your-api-key-here"
+GROQ_API_KEY ="your-api-key-here"
 
 How to Run
 Make sure you have all prerequisites installed and your API key is set.
@@ -31,6 +31,7 @@ Navigate to the project's root directory.
 
 Run the main application from your terminal:
 
+#TODO
 python main.py
 
 Example Usage

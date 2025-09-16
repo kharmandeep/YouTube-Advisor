@@ -28,13 +28,10 @@ A Retrieval-Augmented Generation (RAG) system with comprehensive evaluation fram
 - Weaviate (local installation)
 
 ### Setup
-1. Clone the repository
-```bash
-git clone <repository-url>
-cd rag-evaluation-system
-```
 
-2. Install dependencies
+
+
+1. Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
@@ -48,7 +45,7 @@ GROQ_API_KEY=your_groq_api_key_here
 4. Start Weaviate (local)
 ```bash
 # Follow Weaviate local installation guide
-docker run -d -p 8080:8080 weaviate/weaviate:latest
+docker compose up -d
 ```
 
 ## Usage
@@ -59,26 +56,6 @@ Start the Streamlit app for an interactive chat interface:
 streamlit run src/app.py
 ```
 Then open your browser to `http://localhost:8501/`
-
-**Features:**
-- Interactive chat interface
-- Real-time responses from video transcripts
-- Automatic citations with timestamps
-- Conversation history support
-
-### Programmatic Usage
-```python
-from rag_chain_setup import get_rag_chain_with_memory
-import weaviate
-
-# Initialize
-client = weaviate.connect_to_local()
-rag_chain = get_rag_chain_with_memory(client, conversation_history=[])
-
-# Ask questions
-response = rag_chain("How can I make my video intros better?")
-print(response)
-```
 
 ### Running Evaluation
 ```bash
@@ -97,25 +74,6 @@ Coherence Score: 9.00
 BERTScore F1: 0.82
 ```
 
-## Evaluation Metrics
-
-| Metric | Description | Scale |
-|--------|-------------|-------|
-| **Fluency** | Grammar and readability | 0-10 |
-| **Relevance** | How well answer addresses question | 0-10 |
-| **Groundedness** | Answer supported by context | 0-10 |
-| **Faithfulness** | Accuracy to source, no hallucination | 0-10 |
-| **Coherence** | Logical flow and consistency | 0-10 |
-| **BERTScore** | Semantic similarity to expected answer | 0-1 |
-
-
-## Key Design Decisions
-
-- **Different LLMs** for generation vs evaluation to reduce bias
-- **768-dimensional embeddings** for semantic search capability
-- **Timestamp-based chunking** to preserve context and enable citations
-- **Multi-metric evaluation** to capture different aspects of response quality
-- **Streamlit interface** for user-friendly interaction and demonstration
 
 ## Sample Questions
 
@@ -123,17 +81,11 @@ BERTScore F1: 0.82
 - "What's the key to good storytelling?"
 - "What are the best practices for YouTube content?"
 
-## Performance
-
-Current baseline performance on evaluation dataset:
-- Average Fluency: 9.5/10
-- Average Relevance: 6.5/10  
-- Average Groundedness: 3.8/10
-- Average BERTScore F1: 0.83
 
 ## Future Improvements
 
 - [ ] Expand evaluation dataset
+- [ ] Expand chatbot functionality to answer questions like "Summarize the whole transcript" 
 - [ ] Implement retrieval optimization
 - [ ] Add more sophisticated chunking strategies
 - [ ] Include human evaluation benchmarks

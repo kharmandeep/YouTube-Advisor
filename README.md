@@ -1,46 +1,140 @@
-# YouTube-Advisor
-Chatbot that gives creators practical advice on how to improve their YouTube channel
-YouTube Advisor Chatbot (LangChain Version)
-This is a multi-turn chatbot that provides advice on YouTube video creation, specifically on topics like storytelling and video introductions. This version uses LangChain to handle the Retrieval-Augmented Generation (RAG) pipeline and manage conversational memory.
+# RAG Evaluation System
 
-Folder Structure
-main.py: The entry point of the application. It now initializes and starts the LangChain-based chatbot.
+A Retrieval-Augmented Generation (RAG) system with comprehensive evaluation framework for querying YouTube video transcripts. Built to demonstrate RAG implementation and systematic performance measurement.
 
-src/: Contains the core logic of the application.
+## Features
 
-chatbot.py: Holds the main chatbot logic, setting up the LangChain QA chain with conversational memory.
+- **Smart Document Retrieval**: Uses Weaviate vector database with semantic search
+- **Contextual Response Generation**: Powered by Groq LLMs with automatic citation
+- **Comprehensive Evaluation**: 6-metric assessment framework for response quality
+- **Memory Support**: Handles conversation history and follow-up questions
+- **Automated Scoring**: LLM-as-a-judge evaluation with numerical metrics
+- **Interactive Web Interface**: Streamlit-based chat interface for easy usage
 
-data/transcripts/: A folder for storing the raw transcript data.
+## Tech Stack
 
-Prerequisites
-Before running the application, you need to install the required libraries and set up your API key.
+- **Web Interface**: Streamlit
+- **Vector Database**: Weaviate
+- **Embeddings**: HuggingFace `sentence-transformers/all-mpnet-base-v2` 
+- **LLM**: Groq (`openai/gpt-oss-120b` for generation, `llama-3.3-70b-versatile` for evaluation)
+- **Framework**: LangChain
+- **Evaluation**: BERTScore + Custom LLM judges
 
-Install dependencies:
+## Installation
 
+### Prerequisites
+- Python 3.8+
+- Groq API key
+- Weaviate (local installation)
+
+### Setup
+1. Clone the repository
+```bash
+git clone <repository-url>
+cd rag-evaluation-system
+```
+
+2. Install dependencies
+```bash
 pip install -r requirements.txt
+```
 
-Set up your Groq API key:
-Create a .env file in the project's root directory and add your key:
+3. Set up environment variables
+```bash
+# Create .env file
+GROQ_API_KEY=your_groq_api_key_here
+```
 
-GROQ_API_KEY ="your-api-key-here"
+4. Start Weaviate (local)
+```bash
+# Follow Weaviate local installation guide
+docker run -d -p 8080:8080 weaviate/weaviate:latest
+```
 
-How to Run
-Make sure you have all prerequisites installed and your API key is set.
+## Usage
 
-Navigate to the project's root directory.
+### Web Interface (Recommended)
+Start the Streamlit app for an interactive chat interface:
+```bash
+streamlit run src/app.py
+```
+Then open your browser to `http://localhost:8501/`
 
-Run the main application from your terminal:
+**Features:**
+- Interactive chat interface
+- Real-time responses from video transcripts
+- Automatic citations with timestamps
+- Conversation history support
 
-#TODO
-python main.py
+### Programmatic Usage
+```python
+from rag_chain_setup import get_rag_chain_with_memory
+import weaviate
 
-Example Usage
-Once the chatbot is running, you can have a natural, multi-turn conversation. You can ask follow-up questions without having to repeat the full context.
+# Initialize
+client = weaviate.connect_to_local()
+rag_chain = get_rag_chain_with_memory(client, conversation_history=[])
 
-"How can I make my video intros better?"
+# Ask questions
+response = rag_chain("How can I make my video intros better?")
+print(response)
+```
 
-"What's the key to good storytelling?"
+### Running Evaluation
+```bash
+python src/eval.py
+```
 
-"Can you give me a summary of what you just told me?"
+### Sample Output
+```
+--- Evaluating question: 'How can I make my video intros better?' ---
+Chatbot response: Focus on making the intro captivating – a compelling opening keeps viewers engaged...
+Fluency Score: 9.00
+Relevance Score: 8.00
+Groundedness Score: 7.50
+Faithfulness Score: 8.50
+Coherence Score: 9.00
+BERTScore F1: 0.82
+```
 
-"What was the timestamp for that?"
+## Evaluation Metrics
+
+| Metric | Description | Scale |
+|--------|-------------|-------|
+| **Fluency** | Grammar and readability | 0-10 |
+| **Relevance** | How well answer addresses question | 0-10 |
+| **Groundedness** | Answer supported by context | 0-10 |
+| **Faithfulness** | Accuracy to source, no hallucination | 0-10 |
+| **Coherence** | Logical flow and consistency | 0-10 |
+| **BERTScore** | Semantic similarity to expected answer | 0-1 |
+
+
+## Key Design Decisions
+
+- **Different LLMs** for generation vs evaluation to reduce bias
+- **768-dimensional embeddings** for semantic search capability
+- **Timestamp-based chunking** to preserve context and enable citations
+- **Multi-metric evaluation** to capture different aspects of response quality
+- **Streamlit interface** for user-friendly interaction and demonstration
+
+## Sample Questions
+
+- "How can I make my video intros better?"
+- "What's the key to good storytelling?"
+- "What are the best practices for YouTube content?"
+
+## Performance
+
+Current baseline performance on evaluation dataset:
+- Average Fluency: 9.5/10
+- Average Relevance: 6.5/10  
+- Average Groundedness: 3.8/10
+- Average BERTScore F1: 0.83
+
+## Future Improvements
+
+- [ ] Expand evaluation dataset
+- [ ] Implement retrieval optimization
+- [ ] Add more sophisticated chunking strategies
+- [ ] Include human evaluation benchmarks
+- [ ] Enhanced Streamlit UI with evaluation dashboard

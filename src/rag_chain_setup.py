@@ -42,6 +42,20 @@ def get_rag_chain_with_memory(client: WeaviateClient, conversation_history: list
         print("LLM ready")
         
         def process_query_with_memory(query: str):
+            """Process query with memory - check if it references conversation history or is out of scope."""
+            # Make the keyword list more robust by checking for variations
+            out_of_scope_keywords = ['summarize', 'summary']
+            transcript_keywords = ['transcript', 'video', 'document']
+            
+            query_lower = query.lower()
+            
+            # Check for a combination of keywords
+            if any(keyword in query_lower for keyword in out_of_scope_keywords) and \
+               any(keyword in query_lower for keyword in transcript_keywords):
+                # An extra check to prevent false positives like 'summarize last response'
+                if not any(memory_keyword in query_lower for memory_keyword in ['last response', 'previous response']):
+                    return "I don't know"
+            
             """Process query with memory - check if it references conversation history"""
             memory_keywords = ['summary', 'summarize', 'last response', 'previous answer', 'what did you say', 'what you told me', 'earlier']
             
